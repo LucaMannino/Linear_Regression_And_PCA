@@ -1,0 +1,201 @@
+---
+title: "Nottingham project"
+author: "Luca Mannino"
+date: "21/12/2020"
+output: html_document
+---
+
+```{r load-packages, message = FALSE}
+library(ggplot2)
+library(dplyr)
+library(Hmisc)
+```
+
+### Load data
+
+Make sure your data and R Markdown files are in the same directory. When loaded
+your data file will be called `brfss2013`. Delete this note when before you submit 
+your work. 
+
+```{r load-data}
+read.csv("Total.TauvsAB.csv")
+```
+Assign the data table to a variable and look at a summary of the data
+
+```{r}
+TotalTvsAB <- read.csv("Total.TauvsAB.csv")
+TotalTvsAB <- data.frame(TotalTvsAB, row.names = TotalTvsAB$Patient_ID)
+TotalTvsAB <- TotalTvsAB[,-1]
+read.csv("Total.TauvsAB.csv")
+summary(TotalTvsAB)
+TotalTvsAB_PCA
+```
+
+Plot PCa with appropiate formulas for the algorithm
+
+```{r}
+ggplot(TotalTvsAB_PCA, aes(PC1,PC2 ))+ stat_function(fun = function(x) {0.45*x +300}, col = "black") + stat_function(fun = function(x) {0.45*x +235}, col = "gray50") +    stat_function(fun = function(x) {0.45*x +90}, col = "gray65") + stat_function(fun = function(x) {0.45*x +10}, col = "gray80")+geom_point(shape = TotalTvsAB_PCA$Shape)
+
+```
+
+Obtain info for algorithm
+will need to complete the powerpoint again.
+
+```{r}
+TotalTvsAB_Pr
+summary(TotalTvsAB)
+
+```
+
+```{r}
+ThreeVariables3 <- read.csv("ThreeVariables.csv")
+ThreeVariables3 <- data.frame(ThreeVariables, row.names = ThreeVariables$Patient_ID)
+
+summary(ThreeVariables3)
+```
+
+```{r}
+summary(ThreeVariables3)
+ThreeVariablesPCA3 <- prcomp(ThreeVariables3[,4:6])
+ThreeVariablesPCA3$x
+LastPCA <- cbind(ThreeVariables3,ThreeVariablesPCA3$x)
+LastPCA
+```
+
+```{r}
+ThreeVariablesPCA <- cbind(ThreeVariables,ThreeVariablesPCA$x)
+TotalTvsAB_PCA
+
+```
+
+ROC calculations to then be added in a new table on the actual word file.
+will do later
+
+```{r}
+AgeVsTTau <- read.csv("AgeVsTotalTau.csv")
+AgeVsPTau <- read.csv("AgeVsPTau.csv")
+AgeVsAB   <- read.csv("AgeVsAB.csv")
+
+AvsTTau <- lm(AgeVsTTau$Total.Tau..pg.ml.~AgeVsTTau$Age.at.Diagnosis, data = AgeVsTTau)
+summary(AvsTTau)
+
+	with(AvsTTau,plot(AgeVsTTau$Age.at.Diagnosis, AgeVsTTau$Total.Tau..pg.ml.))+
+	abline(AvsTTau)
+	
+CorA <- cor.test(AgeVsTTau$Total.Tau..pg.ml.,AgeVsTTau$Age.at.Diagnosis )
+
+CorA
+```
+```{r}
+AgeVsTTau2 <- read.csv("AgeVsTotalTauNo30.csv")
+
+
+AvsTTau2 <- lm(AgeVsTTau2$Total.Tau..pg.ml.~AgeVsTTau2$Age.at.Diagnosis, data = AgeVsTTau)
+summary(AvsTTau2)
+
+	with(AvsTTau2,plot(AgeVsTTau2$Age.at.Diagnosis, AgeVsTTau2$Total.Tau..pg.ml.))+
+	abline(AvsTTau2)
+	
+CorA2 <- cor.test(AgeVsTTau2$Total.Tau..pg.ml.,AgeVsTTau2$Age.at.Diagnosis )
+
+CorA2
+```
+
+
+
+
+
+```{r}
+
+AvsPTau <- lm(AgeVsPTau$Phospho_Tau..pg.ml.~AgeVsPTau$Age.at.Diagnosis, data = AgeVsPTau)
+summary(AvsPTau)
+
+	with(AvsPTau,plot(AgeVsPTau$Age.at.Diagnosis, AgeVsPTau$Phospho_Tau..pg.ml.))+
+	abline(AvsPTau)
+	
+CorB <- cor.test(AgeVsPTau$Phospho_Tau..pg.ml.,AgeVsPTau$Age.at.Diagnosis )
+
+CorB
+```
+
+```{r}
+
+
+AvsAB <- lm(AgeVsAB$AB..pg.ml.~AgeVsAB$Age.at.Diagnosis, data = AgeVsAB)
+summary(AvsAB)
+
+	with(AvsAB,plot(AgeVsAB$Age.at.Diagnosis, AgeVsAB$AB..pg.ml.))+
+	abline(AvsAB)
+	
+CorC <- cor.test(AgeVsAB$AB..pg.ml.,AgeVsAB$Age.at.Diagnosis )
+
+CorC	
+```
+correlation between PTau Ab and TTau
+```{r}
+
+TTauVSABVSPTau<- read.csv("TtauVsPTauVsAB.csv")
+TTauvsPTau <- lm(TTauVSABVSPTau$Total.Tau..pg.ml.~TTauVSABVSPTau$Phospho_Tau..pg.ml., data = TTauVSABVSPTau)
+summary(TTauvsPTau)
+
+	with(TTauvsPTau,plot(TTauVSABVSPTau$Phospho_Tau..pg.ml.~TTauVSABVSPTau$Total.Tau..pg.ml.))+
+	abline(TTauvsPTau)
+	
+CorTVP<- cor.test(TTauVSABVSPTau$Phospho_Tau..pg.ml.,TTauVSABVSPTau$Total.Tau..pg.ml.)
+
+CorTVP	
+```
+```{r}
+
+TTauVSABVSPTau<- read.csv("TtauVsPTauVsAB.csv")
+TTauvsAB <- lm(TTauVSABVSPTau$Total.Tau..pg.ml.~TTauVSABVSPTau$AB..pg.ml., data = TTauVSABVSPTau)
+summary(TTauvsAB)
+
+	with(TTauvsAB,plot(TTauVSABVSPTau$AB..pg.ml.~TTauVSABVSPTau$Total.Tau..pg.ml.))+
+	abline(TTauvsAB)
+	
+CorTVB<- cor.test(TTauVSABVSPTau$AB..pg.ml.,TTauVSABVSPTau$Total.Tau..pg.ml.)
+
+CorTVB	
+```
+```{r}
+
+TTauVSABVSPTau<- read.csv("TtauVsPTauVsAB.csv")
+PTauvsAB <- lm(TTauVSABVSPTau$Phospho_Tau..pg.ml.~TTauVSABVSPTau$AB..pg.ml., data = TTauVSABVSPTau)
+summary(PTauvsAB)
+
+	with(PTauvsAB,plot(TTauVSABVSPTau$AB..pg.ml.~TTauVSABVSPTau$Phospho_Tau..pg.ml.))+
+	abline(PTauvsAB)
+	
+CorPVB<- cor.test(TTauVSABVSPTau$AB..pg.ml.,TTauVSABVSPTau$Phospho_Tau..pg.ml.)
+
+CorPVB	
+```
+Then need to calculate the new sample size calculations for all 3 AB total TAu and PTau
+Will need to load 3 new files
+also needed to do the last correlation with age but reverse the axis and add a proper legend.
+
+```{r}
+
+TTauVSABVSPTau<- read.csv("TtauVsPTauVsAB.csv")
+summary(TTauVSABVSPTau)
+sd(TTauVSABVSPTau$AB..pg.ml.)
+sd(TTauVSABVSPTau$Total.Tau..pg.ml.)
+sd(AgeVsPTau$Phospho_Tau..pg.ml.)
+
+ratio_ADvsSCI <- 23/8
+ratio_ADvsSCI
+```
+
+
+
+
+we need also to discuss if we divide the group only to e <65 years of age, do the result changes? 
+figure out a way to protray that change
+
+
+
+lastly go through the comments left 
+
+
+
